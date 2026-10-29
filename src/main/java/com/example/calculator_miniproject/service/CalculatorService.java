@@ -1,6 +1,7 @@
 package com.example.calculator_miniproject.service;
 import org.springframework.stereotype.Service;
 
+import com.example.calculator_miniproject.exception.DivideByZeroException;
 @Service
 public class CalculatorService {
 
@@ -15,7 +16,7 @@ public class CalculatorService {
     }
     public double divide(double a, double b) {
         if (b == 0) {
-            throw new IllegalArgumentException("Cannot divide by zero");
+            throw new DivideByZeroException("Cannot divide by zero");
         }
         return a / b;
     }
