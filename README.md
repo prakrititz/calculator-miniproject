@@ -85,6 +85,35 @@ src/test/java/com/example/calculator_miniproject/
   CalculatorControllerIT.java             MockMvc integration tests
 ```
 
-## Docker, Compose and Jenkins
+## Docker
+
+The `Dockerfile` is a multi-stage build: a Maven + JDK 17 stage compiles the JAR, and a small
+`eclipse-temurin:17-jre-alpine` stage runs it as a non-root user.
+
+```bash
+docker build -t calculator-miniproject:1.0 .
+docker run -d -p 8080:8080 --name calc calculator-miniproject:1.0
+```
+
+Open <http://localhost:8080/actuator/health>. Stop it with `docker rm -f calc`.
+
+## Docker Compose
+
+`docker-compose.yml` starts two services on a private network (`app-net`):
+
+| Service | Image | Role |
+|---------|-------|------|
+| `calculator` | `calculator-miniproject:1.0` | the Spring Boot app (port 8080, internal only), health-checked via `/actuator/health` |
+| `nginx` | `nginx:alpine` | reverse proxy and the only public entry point (port 80), configured by `nginx/nginx.conf` |
+
+```bash
+docker compose up -d     # start the whole stack
+docker compose ps        # calculator should show (healthy)
+docker compose down      # stop and remove it
+```
+
+Then call the API through Nginx, with no port needed: <http://localhost/api/v1/add?a=2&b=3>
+
+## Jenkins
 
 _Coming as the pipeline is built._
