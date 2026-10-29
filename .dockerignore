@@ -1,0 +1,11 @@
+# Keep the Docker build context small and stop local junk leaking into the image
+target/
+.git/
+.gitignore
+.gitattributes
+.vscode/
+.idea/
+*.md
+*.log
+.env
+.env.*
