@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         // Docker Hub repository for the image (username/repo)
-        IMAGE   = 'sweetnslimybutter/calculator-miniproject'
+        IMAGE   = 'sweetnslimybutter/jenkins-calculator-miniproject'
         // Same Compose project name as a local "docker compose up", so re-runs update the stack in place
         PROJECT = 'calculator-miniproject'
         NOTIFY  = 'prakrititz.borah.iiitb@gmail.com'
