@@ -60,6 +60,14 @@ class CalculatorControllerIT {
     }
 
     @Test
+    @DisplayName("GET /actuator/info returns the app details")
+    void infoEndpoint() throws Exception {
+        mockMvc.perform(get("/actuator/info"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.app.name").value("Calculator Mini Project"));
+    }
+
+    @Test
     @DisplayName("GET /actuator/health returns 200 and status UP")
     void healthEndpoint() throws Exception {
         mockMvc.perform(get("/actuator/health"))
