@@ -114,6 +114,27 @@ docker compose down      # stop and remove it
 
 Then call the API through Nginx, with no port needed: <http://localhost/api/v1/add?a=2&b=3>
 
-## Jenkins
+## Jenkins CI/CD pipeline
 
-_Coming as the pipeline is built._
+The `Jenkinsfile` (declarative pipeline) builds, tests, packages and deploys the app on every change.
+
+| # | Stage | What it does |
+|---|-------|--------------|
+| 1 | Checkout | Pulls the latest code from GitHub |
+| 2 | Build | `mvn -B clean package -DskipTests` builds the executable JAR |
+| 3 | Test | `mvn -B test` runs the unit and MockMvc tests, publishes the JUnit XML, and fails the build on any test failure |
+| 4 | Docker Build | Builds the image, tagged with `$BUILD_NUMBER` and `latest` |
+| 5 | Push | Logs in to Docker Hub with the `dockerhub-creds` Jenkins credential and pushes both tags |
+| 6 | Deploy | `docker compose up -d` with the new image, then waits until `/actuator/health` reports `UP` through nginx |
+
+After the run, Jenkins emails the result (success or failure).
+
+- **Trigger:** Poll SCM checks GitHub about every 2 minutes and starts a build when `main` has a new commit.
+- **Secrets:** the Docker Hub access token is stored only in Jenkins Credentials (ID `dockerhub-creds`). It is never in the repository or in the build log.
+- **Idempotent:** the Deploy stage always uses the same Compose project name (`calculator-miniproject`), so re-running the pipeline updates the running stack in place.
+
+Docker Hub image: <https://hub.docker.com/r/sweetnslimybutter/jenkins-calculator-miniproject>
+
+```bash
+docker run -p 8080:8080 sweetnslimybutter/jenkins-calculator-miniproject:latest
+```
